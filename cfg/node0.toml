@@ -1,0 +1,24 @@
+addr-raft = "node0:8081"
+addr-client = "node0:8082"
+dir-data = "/tmp/tinykv"
+
+[replication]
+shard-capacity-bytes = "96MB"
+
+[raft]
+max-entry-bytes = "10MB"
+
+[prophet]
+name = "node0"
+rpc-addr = "node0:8083"
+storage-node = true
+
+[prophet.embed-etcd]
+join = ""
+client-urls = "http://0.0.0.0:8084"
+advertise-client-urls = "http://node0:8084"
+peer-urls = "http://0.0.0.0:8085"
+advertise-peer-urls = "http://node0:8085"
+
+[prophet.replication]
+max-replicas = 3
