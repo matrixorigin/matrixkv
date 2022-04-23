@@ -7,6 +7,7 @@ import (
 	"time"
 
 	cpebble "github.com/cockroachdb/pebble"
+	"github.com/fagongzi/util/format"
 	"github.com/gin-gonic/gin"
 	"github.com/lni/vfs"
 	"github.com/matrixorigin/matrixcube/client"
@@ -23,7 +24,7 @@ import (
 )
 
 var (
-	defaultTimeout = time.Second * 10
+	defaultTimeout = time.Second * 30
 )
 
 // Server tinykv server. The server support set, get and delete operation based on http.
@@ -182,17 +183,23 @@ var (
 func (s *Server) handleTest() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		size := c.Query("size")
+		n := format.MustParseStringInt(c.Query("count"))
 
 		ctx, cancel := context.WithTimeout(context.TODO(), defaultTimeout)
 		defer cancel()
 
-		f := s.kvClient.Set(ctx, key, valuesMap[size])
-		defer f.Close()
+		var fs []*client.Future
+		for i := 0; i < n; i++ {
+			fs = append(fs, s.kvClient.Set(ctx, key, valuesMap[size]))
+		}
 
-		err := f.GetError()
 		resp := &metadata.GetResponse{}
-		if err != nil {
-			resp.Error = err.Error()
+		for _, f := range fs {
+			err := f.GetError()
+			if err != nil {
+				resp.Error = err.Error()
+			}
+			f.Close()
 		}
 
 		c.JSON(http.StatusOK, resp)
