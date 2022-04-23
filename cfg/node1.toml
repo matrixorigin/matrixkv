@@ -2,16 +2,13 @@ addr-raft = "node1:8081"
 addr-client = "node1:8082"
 dir-data = "/tmp/tinykv"
 
-[replication]
-shard-capacity-bytes = "96MB"
-
 [raft]
-max-entry-bytes = "10MB"
+max-entry-bytes = "200MB"
 
 [prophet]
 name = "node1"
 rpc-addr = "node1:8083"
-storage-node = true
+prophet-node = true
 
 [prophet.embed-etcd]
 join = "http://node0:8085"
