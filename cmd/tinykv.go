@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	addr = flag.String("addr", "127.0.0.1:8080", "tinykv server address")
-	cfg  = flag.String("cfg", "./cube.toml", "cube toml config file")
+	addr          = flag.String("addr", "127.0.0.1:8080", "tinykv server address")
+	shardCapacity = flag.Uint64("shard-capacity", 1024*1024*64, "Data shard capaticy bytes")
+	cfg           = flag.String("cfg", "./cube.toml", "cube toml config file")
 )
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 		panic(err)
 	}
 
+	cfg.Feature.ShardCapacityBytes = *shardCapacity
 	svr := server.New(cfg)
 	if err := svr.Start(); err != nil {
 		panic(err)

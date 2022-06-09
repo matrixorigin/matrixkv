@@ -1,0 +1,16 @@
+addr-raft = "node3:8081"
+addr-client = "node3:8082"
+dir-data = "/tmp/tinykv"
+
+[raft]
+max-entry-bytes = "200MB"
+
+[prophet]
+name = "node3"
+rpc-addr = "node3:8083"
+prophet-node = false
+external-etcd = [
+    "http://node0:8084",
+    "http://node1:8084",
+    "http://node2:8084",
+]

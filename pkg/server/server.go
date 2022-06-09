@@ -7,7 +7,6 @@ import (
 	"time"
 
 	cpebble "github.com/cockroachdb/pebble"
-	"github.com/fagongzi/util/format"
 	"github.com/gin-gonic/gin"
 	"github.com/lni/vfs"
 	"github.com/matrixorigin/matrixcube/client"
@@ -38,7 +37,7 @@ type Server struct {
 
 // New create a tiny cube by config
 func New(cfg config.Config) *Server {
-	logger := log.GetDefaultZapLoggerWithLevel(zap.FatalLevel)
+	logger := log.GetDefaultZapLoggerWithLevel(zap.InfoLevel)
 
 	// init logger
 	cfg.CubeConfig.Logger = logger
@@ -56,8 +55,7 @@ func New(cfg config.Config) *Server {
 	kvCommandExecutor := executor.NewKVExecutor(kvs)
 	kvDataStorage := kv.NewKVDataStorage(kv.NewBaseStorage(kvs, vfs.Default),
 		kvCommandExecutor,
-		kv.WithSampleSync(100000),
-		kv.WithFeature(storage.Feature{DisableShardSplit: true}))
+		kv.WithFeature(cfg.Feature))
 
 	// we only have a kv-based data storage
 	cfg.CubeConfig.Storage.DataStorageFactory = func(group uint64) storage.DataStorage {
@@ -87,7 +85,6 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	s.eng.GET("/test", s.handleTest())
 	s.eng.POST("/set", s.handleSet())
 	s.eng.POST("/delete", s.handleDelete())
 	s.eng.GET("/get", s.handleGet())
@@ -159,47 +156,6 @@ func (s *Server) handleGet() func(c *gin.Context) {
 			resp.Error = err.Error()
 		} else {
 			resp.Value = string(r.Value)
-		}
-
-		c.JSON(http.StatusOK, resp)
-	}
-}
-
-var (
-	key       = make([]byte, 64)
-	valuesMap = map[string][]byte{
-		"4kb":   make([]byte, 1024*4),
-		"8kb":   make([]byte, 1024*8),
-		"16kb":  make([]byte, 1024*16),
-		"32kb":  make([]byte, 1024*32),
-		"64kb":  make([]byte, 1024*64),
-		"128kb": make([]byte, 1024*128),
-		"256kb": make([]byte, 1024*256),
-		"512kb": make([]byte, 1024*512),
-		"1mb":   make([]byte, 1024*1024),
-	}
-)
-
-func (s *Server) handleTest() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		size := c.Query("size")
-		n := format.MustParseStringInt(c.Query("count"))
-
-		ctx, cancel := context.WithTimeout(context.TODO(), defaultTimeout)
-		defer cancel()
-
-		var fs []*client.Future
-		for i := 0; i < n; i++ {
-			fs = append(fs, s.kvClient.Set(ctx, key, valuesMap[size]))
-		}
-
-		resp := &metadata.GetResponse{}
-		for _, f := range fs {
-			err := f.GetError()
-			if err != nil {
-				resp.Error = err.Error()
-			}
-			f.Close()
 		}
 
 		c.JSON(http.StatusOK, resp)

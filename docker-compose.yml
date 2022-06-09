@@ -9,6 +9,8 @@ services:
     command: 
       - --addr=node0:8080
       - --cfg=/etc/cube.toml
+      # shard will split after 1024 bytes
+      - --shard-capacity=1024
 
   node1:
     image: tinykv
@@ -19,6 +21,8 @@ services:
     command: 
       - --addr=node1:8080
       - --cfg=/etc/cube.toml
+      # shard will split after 1024 bytes
+      - --shard-capacity=1024
     depends_on:
       - node0
 
@@ -31,5 +35,23 @@ services:
     command: 
       - --addr=node2:8080
       - --cfg=/etc/cube.toml
+      # shard will split after 1024 bytes
+      - --shard-capacity=1024
     depends_on:
       - node1
+
+  node3:
+    image: tinykv
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./cfg/node3.toml:/etc/cube.toml
+    command: 
+      - --addr=node3:8080
+      - --cfg=/etc/cube.toml
+      # shard will split after 1024 bytes
+      - --shard-capacity=1024
+    depends_on:
+      - node0
+      - node1
+      - node2
