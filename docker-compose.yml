@@ -34,6 +34,7 @@ services:
       - "8082:8080"
     volumes:
       - ./cfg/node2.toml:/etc/cube.toml
+      - /data/node2:/data/tinykv
     command: 
       - --addr=node2:8080
       - --cfg=/etc/cube.toml
@@ -48,6 +49,7 @@ services:
       - "8083:8080"
     volumes:
       - ./cfg/node3.toml:/etc/cube.toml
+      - /data/node3:/data/tinykv
     command: 
       - --addr=node3:8080
       - --cfg=/etc/cube.toml
