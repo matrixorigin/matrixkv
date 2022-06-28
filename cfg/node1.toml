@@ -1,6 +1,6 @@
 addr-raft = "node1:8081"
 addr-client = "node1:8082"
-dir-data = "/tmp/tinykv"
+dir-data = "/data/tinykv"
 
 [raft]
 max-entry-bytes = "200MB"

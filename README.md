@@ -1,9 +1,17 @@
 # Tinykv
 This is a distributed kv project to demonstrate how to use matrixcube.
 
-## Build docker image
+### Build docker image
 ```bash
 make docker
+```
+
+### Prepare local data dir
+```bash
+mkdir -p /data/node0
+mkdir -p /data/node1
+mkdir -p /data/node2
+mkdir -p /data/node3
 ```
 
 ### Run with docker-compose
