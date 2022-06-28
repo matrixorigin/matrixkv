@@ -165,9 +165,23 @@ func (s *Server) handleGet() func(c *gin.Context) {
 
 func (s *Server) handleShards() func(c *gin.Context) {
 	return func(c *gin.Context) {
+		id := uint64(0)
+		local := c.Query("local")
+		if len(local) > 0 {
+			id = s.store.Meta().ID
+		}
+
 		var shards []raftstore.Shard
 		s.store.GetRouter().AscendRangeWithoutSelectReplica(0, nil, nil, func(shard raftstore.Shard) bool {
-			shards = append(shards, shard)
+			if id == 0 {
+				shards = append(shards, shard)
+			} else {
+				for _, r := range shard.Replicas {
+					if r.StoreID == id {
+						shards = append(shards, shard)
+					}
+				}
+			}
 			return true
 		})
 
