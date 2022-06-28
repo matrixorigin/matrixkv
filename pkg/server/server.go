@@ -88,6 +88,7 @@ func (s *Server) Start() error {
 	s.eng.POST("/set", s.handleSet())
 	s.eng.POST("/delete", s.handleDelete())
 	s.eng.GET("/get", s.handleGet())
+	s.eng.GET("/shards", s.handleShards())
 
 	return s.eng.Run(s.cfg.Addr)
 }
@@ -159,5 +160,17 @@ func (s *Server) handleGet() func(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusOK, resp)
+	}
+}
+
+func (s *Server) handleShards() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var shards []raftstore.Shard
+		s.store.GetRouter().AscendRangeWithoutSelectReplica(0, nil, nil, func(shard raftstore.Shard) bool {
+			shards = append(shards, shard)
+			return true
+		})
+
+		c.JSON(http.StatusOK, shards)
 	}
 }
