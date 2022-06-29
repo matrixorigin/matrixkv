@@ -11,14 +11,14 @@ RUN MAIN_VERSION=$(cat /etc/alpine-release | cut -d '.' -f 0-2) \
     && apk add --update --no-cache g++ \
     && apk add --update --no-cache bash
 
-COPY . /go/src/github.com/matrixorigin/tinykv
-WORKDIR /go/src/github.com/matrixorigin/tinykv
+COPY . /go/src/github.com/matrixorigin/matrixkv
+WORKDIR /go/src/github.com/matrixorigin/matrixkv
    
 RUN make
 
 FROM alpine:latest
 
-COPY --from=builder /go/src/github.com/matrixorigin/tinykv/dist/tinykv /usr/local/bin/tinykv
+COPY --from=builder /go/src/github.com/matrixorigin/matrixkv/dist/matrixkv /usr/local/bin/matrixkv
 
 # Alpine Linux doesn't use pam, which means that there is no /etc/nsswitch.conf,
 # but Golang relies on /etc/nsswitch.conf to check the order of DNS resolving
@@ -28,4 +28,4 @@ COPY --from=builder /go/src/github.com/matrixorigin/tinykv/dist/tinykv /usr/loca
 
 RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 
-ENTRYPOINT ["/usr/local/bin/tinykv"]
+ENTRYPOINT ["/usr/local/bin/matrixkv"]

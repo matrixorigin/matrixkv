@@ -1,12 +1,12 @@
 version: '2.1'
 services:
   node0:
-    image: tinykv
+    image: matrixkv
     ports:
       - "8080:8080"
     volumes:
       - ./cfg/node0.toml:/etc/cube.toml
-      - /data/node0:/data/tinykv
+      - /data/node0:/data/matrixkv
     command: 
       - --addr=node0:8080
       - --cfg=/etc/cube.toml
@@ -14,12 +14,12 @@ services:
       - --shard-capacity=1024
 
   node1:
-    image: tinykv
+    image: matrixkv
     ports:
       - "8081:8080"
     volumes:
       - ./cfg/node1.toml:/etc/cube.toml
-      - /data/node1:/data/tinykv
+      - /data/node1:/data/matrixkv
     command: 
       - --addr=node1:8080
       - --cfg=/etc/cube.toml
@@ -29,12 +29,12 @@ services:
       - node0
 
   node2:
-    image: tinykv
+    image: matrixkv
     ports:
       - "8082:8080"
     volumes:
       - ./cfg/node2.toml:/etc/cube.toml
-      - /data/node2:/data/tinykv
+      - /data/node2:/data/matrixkv
     command: 
       - --addr=node2:8080
       - --cfg=/etc/cube.toml
@@ -44,12 +44,12 @@ services:
       - node1
 
   node3:
-    image: tinykv
+    image: matrixkv
     ports:
       - "8083:8080"
     volumes:
       - ./cfg/node3.toml:/etc/cube.toml
-      - /data/node3:/data/tinykv
+      - /data/node3:/data/matrixkv
     command: 
       - --addr=node3:8080
       - --cfg=/etc/cube.toml

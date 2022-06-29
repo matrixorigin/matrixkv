@@ -1,4 +1,4 @@
-module github.com/matrixorigin/tinykv
+module github.com/matrixorigin/matrixkv
 
 go 1.17
 

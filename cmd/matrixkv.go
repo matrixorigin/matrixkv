@@ -5,12 +5,12 @@ import (
 	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
-	"github.com/matrixorigin/tinykv/pkg/config"
-	"github.com/matrixorigin/tinykv/pkg/server"
+	"github.com/matrixorigin/matrixkv/pkg/config"
+	"github.com/matrixorigin/matrixkv/pkg/server"
 )
 
 var (
-	addr          = flag.String("addr", "127.0.0.1:8080", "tinykv server address")
+	addr          = flag.String("addr", "127.0.0.1:8080", "matrixkv server address")
 	shardCapacity = flag.Uint64("shard-capacity", 1024*1024*64, "Data shard capaticy bytes")
 	cfg           = flag.String("cfg", "./cube.toml", "cube toml config file")
 )

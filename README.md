@@ -1,4 +1,4 @@
-# Tinykv
+# Matrixkv
 This is a distributed kv project to demonstrate how to use matrixcube.
 
 ### Build docker image

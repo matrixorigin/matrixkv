@@ -17,8 +17,8 @@ import (
 	"github.com/matrixorigin/matrixcube/storage/executor"
 	"github.com/matrixorigin/matrixcube/storage/kv"
 	"github.com/matrixorigin/matrixcube/storage/kv/pebble"
-	"github.com/matrixorigin/tinykv/pkg/config"
-	"github.com/matrixorigin/tinykv/pkg/metadata"
+	"github.com/matrixorigin/matrixkv/pkg/config"
+	"github.com/matrixorigin/matrixkv/pkg/metadata"
 	"go.uber.org/zap"
 )
 
@@ -26,7 +26,7 @@ var (
 	defaultTimeout = time.Second * 30
 )
 
-// Server tinykv server. The server support set, get and delete operation based on http.
+// Server matrixkv server. The server support set, get and delete operation based on http.
 type Server struct {
 	cfg      config.Config
 	eng      *gin.Engine
