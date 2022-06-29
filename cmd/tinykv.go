@@ -29,7 +29,7 @@ func main() {
 	if _, err = toml.Decode(string(data), &cfg.CubeConfig); err != nil {
 		panic(err)
 	}
-
+	cfg.CubeConfig.Capacity = 1024 * 1024 * 1024 * 1024
 	cfg.Feature.ShardCapacityBytes = *shardCapacity
 	svr := server.New(cfg)
 	if err := svr.Start(); err != nil {

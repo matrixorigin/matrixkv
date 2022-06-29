@@ -11,7 +11,7 @@ dist_dir: ; $(info ======== prepare distribute dir:)
 
 .PHONY: tinykv
 tinykv: dist_dir; $(info ======== compiled tinykv binary)
-	env GOOS=$(GOOS) go build -o $(DIST_DIR)tinykv $(LD_FLAGS) $(ROOT_DIR)cmd/*.go
+	env GOOS=$(GOOS) go build -mod=vendor -o $(DIST_DIR)tinykv $(LD_FLAGS) $(ROOT_DIR)cmd/*.go
 
 .PHONY: docker
 docker: ; $(info ======== compiled tinykv docker)

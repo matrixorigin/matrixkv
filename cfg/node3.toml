@@ -5,6 +5,9 @@ dir-data = "/data/tinykv"
 [raft]
 max-entry-bytes = "200MB"
 
+[replication]
+max-peer-down-time = "15s"
+
 [prophet]
 name = "node3"
 rpc-addr = "node3:8083"
