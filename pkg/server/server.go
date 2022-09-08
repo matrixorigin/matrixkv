@@ -171,20 +171,57 @@ func (s *Server) handleShards() func(c *gin.Context) {
 			id = s.store.Meta().ID
 		}
 
-		var shards []raftstore.Shard
+		var shards []Shard
 		s.store.GetRouter().AscendRangeWithoutSelectReplica(0, nil, nil, func(shard raftstore.Shard) bool {
 			if id == 0 {
-				shards = append(shards, shard)
+				shards = append(shards, newShard(shard))
 			} else {
 				for _, r := range shard.Replicas {
 					if r.StoreID == id {
-						shards = append(shards, shard)
+						shards = append(shards, newShard(shard))
 					}
 				}
 			}
 			return true
 		})
 
-		c.JSON(http.StatusOK, shards)
+		for i, shard := range shards {
+			leaderStoreID := s.store.GetRouter().SelectReplicaStoreWithPolicy(shard.ID, rpcpb.SelectLeader).ID
+			for j, r := range shard.Replicas {
+				if r.StoreID == leaderStoreID {
+					shards[i].Replicas[j].Role = "L"
+				}
+			}
+		}
+
+		c.JSON(http.StatusOK, &StoreInfo{StoreID: s.store.Meta().ID, Shards: shards})
 	}
+}
+
+type StoreInfo struct {
+	StoreID uint64  `json:"store-id"`
+	Shards  []Shard `json:"shards"`
+}
+
+type Shard struct {
+	ID       uint64    `json:"shard-id"`
+	Replicas []Replica `json:"replicas"`
+}
+
+func newShard(shard raftstore.Shard) Shard {
+	s := Shard{ID: shard.ID}
+	for _, r := range shard.Replicas {
+		s.Replicas = append(s.Replicas, Replica{
+			ID:      r.ID,
+			StoreID: r.StoreID,
+			Role:    "F",
+		})
+	}
+	return s
+}
+
+type Replica struct {
+	ID      uint64 `json:"replica-id"`
+	StoreID uint64 `json:"store-id"`
+	Role    string `json:"role"`
 }
